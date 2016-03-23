@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+<div class="container">
+  <canvas id="scene" width="800" height="600" style="border:1px solid black;"></canvas>
+</div>
+<script type="text/javascript">
+  var canvas, ctx;
+  var circles = [];//所有的圆
+  var selectedCircle;//选中的圆
+  var hoveredCircle;//滑过的圆
+  
+  //圆对象
+  function Circle(x, y, radius) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+  }
+  
+  //清除canvas
+  function clear() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  
+  //画圆
+  function drawCircle(ctx, x, y, radius) {
+    ctx.fillStyle = 'rgba(255, 35, 55, 1.0)';
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+  //画场景
+  function drawScene() {
+    clear();
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(255, 110, 110, 0.5)';
+    ctx.moveTo(circles[0].x, circles[0].y);
+    for (var i = 0; i < circles.length; i++) {
+      ctx.lineTo(circles[i].x, circles[i].y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = 'rgba(0, 0, 255, 0.5)';
+    ctx.stroke(); // 画边界,用直线连接所有圆心
+    
+    for (var i = 0; i < circles.length; i++) {
+      drawCircle(ctx, circles[i].x, circles[i].y, (hoveredCircle==i?25:15));
+    }
+    window.requestAnimationFrame(drawScene);
+  }
+  
+  //初始化
+  window.onload = function () {
+    canvas = document.getElementById('scene');
+    ctx = canvas.getContext('2d');
+    
+    var circleRadius = 15;//每个小圆的半径
+    var width = canvas.width;
+    var height = canvas.height;
+    var circlesCount = 7; // 圆的数目
+    
+    for (var i = 0; i < circlesCount; i++) {
+     /* x = Math.min(Math.random() * width,canvas.width*0.9+50);
+      y = Math.min(Math.random() * height,canvas.height*0.9+50); */
+      x = Math.random() * width*0.9+25;
+      y = Math.random() * height*0.9+25;
+      circles.push(new Circle(x, y, circleRadius));
+    }
+
+    //鼠标点下
+    canvas.onmousedown = function (e) {
+      var e=window.event||e;
+      var rec=this.getBoundingClientRect();
+      var mouseX= e.clientX-rec.left;//获取鼠标在canvas中坐标
+      var mouseY= e.clientY-rec.top;
+
+      for (var i = 0; i < circles.length; i++) {
+        var circleX=circles[i].x;
+        var circleY=circles[i].y;
+        var radius=circles[i].radius;
+        //判断鼠标位置和圆心的距离
+        if(Math.pow(mouseX-circleX,2)+Math.pow(mouseY-circleY,2)<Math.pow(radius,2)){
+          selectedCircle=i;
+          break;
+        }
+      }
+    }
+    
+    //鼠标移动
+    canvas.onmousemove= function (e) {
+      var e=window.event||e;
+      var rec=this.getBoundingClientRect();
+      var mouseX= e.clientX-rec.left;//获取鼠标在canvas中坐标
+      var mouseY= e.clientY-rec.top;
+
+        //判断鼠标位置和圆心的距离
+        if(selectedCircle!=undefined){
+          var radius=circles[selectedCircle].radius;
+          /*circles[selectedCircle].x=mouseX;
+          circles[selectedCircle].y=mouseY;*/
+          circles[selectedCircle] = new Circle(mouseX, mouseY,radius); //改变选中圆的位置
+        }
+      hoveredCircle = undefined;
+      for (var i = 0; i < circles.length; i++) {
+        var circleX=circles[i].x;
+        var circleY=circles[i].y;
+        var radius=circles[i].radius;
+
+        //判断鼠标位置和圆心的距离
+        if(Math.pow(mouseX-circleX,2)+Math.pow(mouseY-circleY,2)<Math.pow(radius,2)){
+          hoveredCircle=i;
+          break;
+        }
+      }
+    }
+    //鼠标松开
+    canvas.onmouseup =function(e) {
+      selectedCircle = undefined;
+    };
+
+   /* setInterval(drawScene, 30);*/
+    window.requestAnimationFrame(drawScene);
+  }
+</script>
+</body>
+</html>
