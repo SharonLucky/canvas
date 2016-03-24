@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <style type="text/css">
+    @font-face {
+      font-family: 'PixelFont';
+      src: url('font/pixelfont.eot') format('embedded-opentype'),
+      url('font/pixelfont.woff') format('woff'),
+      url('font/pixelfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    .bgc {
+      background-color: #eee;
+    }
+
+    h1 {
+      font: 22pt 'PixelFont';
+    }
+  </style>
+</head>
+<body class="bgc">
+<h1>Menu</h1>
+
+<div id="GameDiv" style="margin:0 auto;">
+  <canvas id="GameCanvas" width="768" height="512">
+    Your bower don't support canvas.
+  </canvas>
+</div>
+<div id="hidden" style="visibility:hidden; width:1px; height:1px; overflow:hidden">
+  <img id="backgroundMenu" src="img/backgroundmenu.png" onload="MainMenu(this);">
+  <img id="sprLogo" src="img/logo.png" onload="MainMenu(this);">
+  <img id="sprSplashLogo" src="img/splashLogo.png" onload="MainMenu(this);">
+  <img id="sprHTML" src="img/htmlit.png" onload="MainMenu(this);">
+</div>
+<script type="text/javascript">
+  var gameDiv = document.getElementById("GameDiv");
+  gameDiv.style.width = "768px";
+  gameDiv.style.height = "512px";
+
+  var canvas = document.getElementById("GameCanvas");
+  var ctx = canvas.getContext("2d");
+  var patternMenu = null;
+
+  //获取图片的id
+  var backgroundMenu = document.getElementById("backgroundMenu");
+  var sprLogo = document.getElementById("sprLogo");
+  var sprSplashLogo = document.getElementById("sprSplashLogo");
+  var sprHTML = document.getElementById("sprHTML");
+
+  var cx = canvas.width / 2;
+  var cy = canvas.height / 2;
+  var mouseX = 10;
+  var mouseY = 10;
+
+  var itemsLoaded = 0;//当前加载完的图片数
+
+  function MainMenu(item) {
+    itemsLoaded++;//当前加载完的图片数
+    if (itemsLoaded == 4) {
+
+      ctx.save();
+
+      var pattern = ctx.createPattern(backgroundMenu, 'repeat');
+      ctx.fillStyle = pattern;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      ctx.drawImage(sprLogo, canvas.width / 2 - sprLogo.width / 2, 80);
+      ctx.drawImage(sprSplashLogo, 70, 180);
+      /*  ctx.textAlign = "start";*/
+      ctx.font = "12pt 'Segoe UI Light',Verdana";
+      ctx.fillStyle = "#eee";
+      ctx.fillText("HTML.it | Guida Videogame HTML5 di Adriano Tumminelli", 60, canvas.height - 20);
+      ctx.drawImage(sprHTML, 5, canvas.height - 55);
+
+      ctx.shadowOffsetX = 0;
+      ctx.shadowBlur = 0;
+      window.requestAnimationFrame(drawText);
+    }
+  }
+
+  //鼠标hover和no-hover的判断位置显示颜色
+  function MouseInsideText(str, x, y, col1, col2) {
+    ctx.shadowColor = "#000";
+    ctx.shadowOffsetX = 1;
+    ctx.font = "32pt 'PixelFont'"
+    ctx.textAlign = "center";
+    ctx.shadowBlur = 3;
+
+    var w = ctx.measureText(str).width;//字符串的宽
+    var h = 30;
+
+    var inside = (mouseX > x - w / 2 && mouseY > y - h && mouseX < x + w / 2 && mouseY < y + 4 );
+    if (inside) {
+      //鼠标在文本上时
+      ctx.fillStyle = col2;
+    } else {
+      ctx.fillStyle = col1;
+    }
+    ctx.fillText(str, x, y);
+    /*return inside;*/
+  }
+
+  //绘制两行高亮文本
+  function drawText() {
+
+    MouseInsideText("New Game", cx, cy + 10, "#eee", "#ea4");
+    MouseInsideText("Other games", cx, cy + 80, "#eee", "#ea4");
+    window.requestAnimationFrame(drawText);
+  }
+
+  //鼠标移动
+  canvas.onmousemove=function(e) {
+    var e = window.event || e
+    var rect = this.getBoundingClientRect();
+    mouseX =e.clientX - rect.left;//获取鼠标在canvsa中的坐标
+    mouseY =e.clientY - rect.top;
+
+  }
+</script>
+</body>
+</html>
