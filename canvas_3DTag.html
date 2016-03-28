@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    .tagBall {
+      width: 500px;
+      height: 500px;
+      margin: 50px auto;
+      position: relative;
+    }
+
+    .tag {
+      display: block;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      color: #000;
+      text-decoration: none;
+      font-size: 15px;
+      font-family: "微软雅黑";
+      font-weight: bold;
+    }
+
+    .tag:hover {
+      border: 1px solid #666;
+      border-radius: 50%;
+      box-shadow:  0 0 3px #2ba4da;
+    }
+  </style>
+</head>
+<body>
+<div class="tagBall">
+  <a class="tag" href="#">WAXES</a>
+  <a class="tag" href="#">盗墓笔记</a>
+  <a class="tag" href="#">kids</a>
+  <a class="tag" href="#">DO Some</a>
+  <a class="tag" href="#">Try</a>
+  <a class="tag" href="#">Raining</a>
+  <a class="tag" href="#">青春纪念册</a>
+  <a class="tag" href="#">WAXES</a>
+  <a class="tag" href="#">十年</a>
+  <a class="tag" href="#">Friday</a>
+  <a class="tag" href="#">遇见</a>
+  <a class="tag" href="#">bangbangbang</a>
+  <a class="tag" href="#">红颜</a>
+  <a class="tag" href="#">IF YOU</a>
+  <a class="tag" href="#">安静</a>
+  <a class="tag" href="#">Lemon Tree</a>
+  <a class="tag" href="#">宝贝</a>
+  <a class="tag" href="#">Longer</a>
+  <a class="tag" href="#">突然很安静</a>
+  <a class="tag" href="#">Better Man</a>
+  <a class="tag" href="#">再拾年</a>
+  <a class="tag" href="#">Against</a>
+  <a class="tag" href="#">棉花糖</a>
+  <a class="tag" href="#">Endless love</a>
+  <a class="tag" href="#">奔跑吧，兄弟</a>
+  <a class="tag" href="#">I Have Nothing</a>
+  <a class="tag" href="#">如果还有你</a>
+  <a class="tag" href="#">Big Big World</a>
+  <a class="tag" href="#">云</a>
+  <a class="tag" href="#">明天，你好</a>
+  <a class="tag" href="#">Smooth</a>
+  <a class="tag" href="#">梨花落</a>
+</div>
+<script type="text/javascript">
+  var tagEle =document.getElementsByClassName('tag'),
+    paper = document.getElementsByClassName('tagBall')[0];
+  RADIUS = 270,
+    fallLength = 500,//焦距
+    tags = [],
+
+    //通过控制angleX和angleY两个角度的值来控制标签云的旋转方向以及旋转速度，角度的正负值控制旋转方向，大小控制旋转速度
+    angleX = Math.PI / 500,
+    angleY = Math.PI / 500,
+    //要把div标签放在script的前面，不让CX会报Cannot read property 'offsetWidth' of null的错误，原因是div还没有加载出来
+    CX = paper.offsetWidth / 2,
+    CY = paper.offsetHeight / 2;
+
+  EX = paper.offsetLeft + document.body.scrollLeft + document.documentElement.scrollLeft,
+    EY = paper.offsetTop + document.body.scrollTop + document.documentElement.scrollTop;
+
+  /*做一个球面，然后再球面上取均匀分布的点，把点坐标赋给标签，再根据抽象出来的Z轴大小来改变标签的字体大小，透明度，做出立体感觉，然后球体就做好了*/
+  function init() {
+    for (var i = 0; i < tagEle.length; i++) {
+      var a, b;
+      var k = -1 + (2 * (i + 1) - 1) / tagEle.length;
+      var a = Math.acos(k);
+      var b = a * Math.sqrt(tagEle.length * Math.PI);
+
+      //生成球面上的点的x,y,z轴的坐标
+      //简单的球面方程：已知半径r和球心，一般为了方便，我们都以坐标轴原点为球心，有下面三个方程
+      //　x=r*sinθ*cosΦ；y=r*sinθ*sinΦ；z=r*cosθ
+      //3D标签云，一个很重要点的就是平均分布。如果单纯的取随机坐标，会导致一些标签重叠,所以引入下面的公式
+      //copy网上别人的一个公式：θ = arccos( ((2*num)-1)/all - 1);Φ = θ*sqrt(all * π);
+      //num是当前第几个点，all则是点的总数
+
+      var x = RADIUS * Math.sin(a) * Math.cos(b);
+      var y = RADIUS * Math.sin(a) * Math.sin(b);
+      var z = RADIUS * Math.cos(a);
+      var t = new tag(tagEle[i], x, y, z);
+      tagEle[i].style.color = "rgb(" + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + "," + parseInt(Math.random() * 255) + ")";
+      tags.push(t);
+      t.move();
+    }
+  }
+  //绕X轴旋转
+  function rotateX() {
+    var cos = Math.cos(angleX);
+    var sin = Math.sin(angleX);
+    tags.forEach(function () {
+      var y1 = this.y * cos - this.z * sin;
+      var z1 = this.z * cos + this.y * sin;
+      this.y = y1;
+      this.z = z1;
+    })
+
+  }
+  //绕Y轴旋转
+  function rotateY() {
+    var cos = Math.cos(angleY);
+    var sin = Math.sin(angleY);
+    tags.forEach(function () {
+      var x1 = this.x * cos - this.z * sin;
+      var z1 = this.z * cos + this.x * sin;
+      this.x = x1;
+      this.z = z1;
+    })
+  }
+  var tag = function (ele, x, y, z) {
+    this.ele = ele;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+  tag.prototype = {
+    move: function () {
+      var scale = fallLength / (fallLength - this.z);
+      var alpha = (this.z + RADIUS) / (2 * RADIUS);
+      this.ele.style.fontSize = 15 * scale + "px";
+      this.ele.style.opacity = alpha + 0.5;
+      this.ele.style.filter = "alpha(opacity = " + (alpha + 0.5) * 100 + ")";
+      this.ele.style.zIndex = parseInt(scale * 100);
+      this.ele.style.left = this.x + CX - this.ele.offsetWidth / 2 + "px";
+      this.ele.style.top = this.y + CY - this.ele.offsetHeight / 2 + "px";
+    }
+  }
+  Array.prototype.forEach = function (callback) {
+    for (var i = 0; i < this.length; i++) {
+      callback.call(this[i]);
+    }
+  }
+
+  //鼠标事件
+  if("addEventListener" in window){
+    paper.addEventListener("mousemove" , function(event){
+      var x = event.clientX - EX - CX;
+      var y = event.clientY - EY - CY;
+
+      angleY = x*0.00007;
+      angleX = y*0.00007;
+    });
+    paper.addEventListener("mouseout" , function(event){
+      angleX =-Math.PI / 500;
+      angleY =-Math.PI / 500;
+    });
+  }
+  else {
+    paper.attachEvent("onmousemove" , function(event){
+      var x = event.clientX - EX - CX;
+      var y = event.clientY - EY - CY;
+      angleY = x*0.00007;
+      angleX = y*0.00007;
+    });
+    paper.attachEvent("onmouseout" , function(event){
+      angleX = -Math.PI / 500;
+      angleY = -Math.PI / 500;
+    });
+  }
+
+  function animate() {
+    rotateX();
+    rotateY();
+    tags.forEach(function () {
+      this.move();
+    });
+    window.requestAnimationFrame(animate);
+  }
+  init();
+  animate();
+</script>
+
+
+</body>
+</html>
