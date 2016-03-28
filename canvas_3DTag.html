@@ -159,8 +159,8 @@
       var x = event.clientX - EX - CX;
       var y = event.clientY - EY - CY;
 
-      angleY = x*0.00007;
-      angleX = y*0.00007;
+      angleY = x*0.0001;
+      angleX = y*0.0001;
     });
     paper.addEventListener("mouseout" , function(event){
       angleX =-Math.PI / 500;
@@ -171,8 +171,8 @@
     paper.attachEvent("onmousemove" , function(event){
       var x = event.clientX - EX - CX;
       var y = event.clientY - EY - CY;
-      angleY = x*0.00007;
-      angleX = y*0.00007;
+      angleY = x*0.0001;
+      angleX = y*0.0001;
     });
     paper.attachEvent("onmouseout" , function(event){
       angleX = -Math.PI / 500;
