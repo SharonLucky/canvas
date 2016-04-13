@@ -52,6 +52,7 @@
 		this.v4 = vector4;
 		this.color = color;
 		this.zIndex = this.v1.z + this.v2.z + this.v3.z + this.v4.z;
+
 		this.draw = function () {
 			ctx.save();
 			ctx.beginPath();
@@ -100,6 +101,23 @@
 		}
 	}
 
+	/*if ("addEventListener" in window) {
+		window.addEventListener("mousemove", function (event) {
+			var x = event.clientX - canvas.offsetLeft - centerX;
+			var y = event.clientY - canvas.offsetTop - centerY;
+			angleY = x * 0.0001;
+			angleX = y * 0.0001;
+		});
+	}
+	else {
+		window.attachEvent("onmousemove", function (event) {
+			var x = event.clientX - canvas.offsetLeft - centerX;
+			var y = event.clientY - canvas.offsetTop - centerY;
+			angleY = x * 0.0001;
+			angleX = y * 0.0001;
+		});
+	}
+*/
 	function rotateX(vectors) {
 		var cos = Math.cos(angleX);
 		var sin = Math.sin(angleX);
