@@ -29,6 +29,7 @@
 			right: 0;
 			padding: 20px;
 			color: #ecf0f1;
+		}
 	</style>
 </head>
 <body>
@@ -41,12 +42,12 @@
 	<br>
 
 </div>
-<canvas></canvas>
+<canvas id="canvas"></canvas>
 <script>
 	var width = window.innerWidth;
 	var height = window.innerHeight;
 	var frameRate = 1 / 40;
-	var canvas = document.getElementsByTagName("canvas")[0];
+	var canvas = document.getElementById("canvas");
 	var ctx = canvas.getContext("2d");
 	ctx.shadowBlur = 50;
 	var randomstartplacement = false;
@@ -62,7 +63,7 @@
 	canvas.width = width;
 	canvas.height = height;
 
-	function setup() {
+	function Init() {
 		window.addEventListener('resize', resizeCanvas, false);
 		window.addEventListener('keydown', keyUp, false);
 
@@ -73,10 +74,9 @@
 			randomstartplacement = e.currentTarget.checked;
 		};
 
-		initSentence("HELLO CODEPEN! TYPE SOMETHING!");
+		initSentence("Welcome Friend!");
 		loop();
 	}
-
 
 	function resizeCanvas() {
 		width = window.innerWidth;
@@ -85,14 +85,12 @@
 		canvas.height = height;
 	}
 
-
 	function keyUp(e) {
 		letterpushed = true;
 		/*String.fromCharCode()接受一个指定的 Unicode 值，然后返回一个字符串*/
 		var ltr = generateLetter(String.fromCharCode(e.keyCode));
 		letterlist.push(ltr);
 	}
-
 
 	function initSentence(s) {
 		var sentence = s.split('');
@@ -107,7 +105,7 @@
 		}, 300);
 	}
 
-	var generateLetter = function generateLetter(value) {
+	function generateLetter(value) {
 		return {
 			position: {
 				x: generateStartPlacement(),
@@ -132,21 +130,21 @@
 				context.restore();
 			}
 		};
-	};
+	}
 
 	function generateColor() {
 		if (rainbowmode) {
 			return "#" + Math.random().toString(16).slice(2, 8);
 		}
 		return "#ffffff";
-	};
+	}
 
 	function generateStartPlacement() {
 		if (randomstartplacement) {
 			return getRandomArbitrary(0, width);
 		}
 		return width / 2;
-	};
+	}
 
 	function loop() {
 		ctx.clearRect(0, 0, width, height);
@@ -192,13 +190,15 @@
 		window.requestAnimationFrame(function () {
 			loop();
 		});
-	};
+	}
+
 
 	function getRandomArbitrary(min, max) {
 		return Math.random() * (max - min) + min;
-	};
+	}
+	;
 
-	setup();
+	Init();
 </script>
 </body>
 </html>
